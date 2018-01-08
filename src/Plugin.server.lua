@@ -1,15 +1,12 @@
 local PROJECT_NAME = "qCmdUtl"
 local VERSION = "5.1.4"
 
-if _G.RegisterPlugin and not _G.RegisterPlugin(PROJECT_NAME) then return end
-
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 local CoreGui              = game:GetService("CoreGui")
 
 local gloo = require(script.Parent.Gloo)
 
 local Plugin              = PluginManager():CreatePlugin()
-local PluginActive        = false
 local Toolbar             = Plugin:CreateToolbar(PROJECT_NAME)
 local ActivateGUIButton   = Toolbar:CreateButton("", ""..PROJECT_NAME.."", "http://www.roblox.com/asset/?id=172761963")
 
@@ -21,7 +18,6 @@ local LegacyMode = false -- Just for you asimo3089...  https://xkcd.com/1172/
 
 local ceil  = math.ceil
 local floor = math.floor
-
 
 --[[
 
@@ -2969,4 +2965,3 @@ do
 	end)
 end
 
-PluginActive = true
