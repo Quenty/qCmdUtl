@@ -1874,7 +1874,7 @@ do local Menu = "Convert"
 
 					if vars.ClassName == "Part" or vars.ClassName == "WedgePart" or vars.ClassName == "CornerWedgePart" or vars.ClassName == "TrussPart" or vars.ClassName == "MeshPart" then
 						object = Instance.new(vars.ClassName)
-						for _, Property in pairs({"BrickColor"; "Material"; "Reflectance"; "Transparency"; "Name"; "Parent"; "Anchored"; "Archivable"; "CanCollide"; "Locked"; "Elasticity"; "Friction"; "BackParamA"; "BackParamB"; "BackSurfaceInput"; "BottomParamA"; "BottomParamB"; "BottomSurfaceInput"; "FrontParamA"; "FrontParamB"; "FrontSurfaceInput"; "LeftParamA"; "LeftParamB"; "LeftSurfaceInput"; "RightParamA"; "RightParamB"; "RightSurfaceInput"; "TopParamA"; "TopParamB"; "TopSurfaceInput"; "BackSurface"; "BottomSurface"; "FrontSurface"; "LeftSurface"; "RightSurface"; "TopSurface";}) do
+						for _, Property in pairs({"Color"; "Material"; "Reflectance"; "Transparency"; "Name"; "Parent"; "Anchored"; "Archivable"; "CanCollide"; "Locked"; "BackParamA"; "BackParamB"; "BackSurfaceInput"; "BottomParamA"; "BottomParamB"; "BottomSurfaceInput"; "FrontParamA"; "FrontParamB"; "FrontSurfaceInput"; "LeftParamA"; "LeftParamB"; "LeftSurfaceInput"; "RightParamA"; "RightParamB"; "RightSurfaceInput"; "TopParamA"; "TopParamB"; "TopSurfaceInput"; "BackSurface"; "BottomSurface"; "FrontSurface"; "LeftSurface"; "RightSurface"; "TopSurface"; "CastShadow"; "CollisionGroupId"; "CustomPhysicalProperties"; "Massless"; "RootPriority";}) do
 							object[Property] = selection[i][Property]
 						end
 						--[[
