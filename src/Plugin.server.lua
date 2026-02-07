@@ -1,13 +1,12 @@
 local PROJECT_NAME = "qCmdUtl"
-local VERSION = "5.1.4"
+local VERSION = "5.1.5"
 
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 local CoreGui              = game:GetService("CoreGui")
 
-local gloo = require(script.Parent.Gloo)
+local gloo = require(script.Gloo)
 
-local Plugin              = PluginManager():CreatePlugin()
-local Toolbar             = Plugin:CreateToolbar(PROJECT_NAME)
+local Toolbar             = plugin:CreateToolbar(PROJECT_NAME)
 local ActivateGUIButton   = Toolbar:CreateButton("", ""..PROJECT_NAME.."", "http://www.roblox.com/asset/?id=172761963")
 
 local NewCFrame           = CFrame.new
@@ -16,8 +15,8 @@ local Vector3FromAxis     = Vector3.FromAxis
 
 local LegacyMode = false -- Just for you asimo3089...  https://xkcd.com/1172/
 
-local ceil  = math.ceil
 local floor = math.floor
+
 
 --[[
 
@@ -95,9 +94,9 @@ end
 ------------------------ qSystems.lua ------------------------
 
 local function RoundNumber(Number, Divider)
-	-- Rounds a Number, with 1.5 rounding up to 2, and so forth, by default. 
+	-- Rounds a Number, with 1.5 rounding up to 2, and so forth, by default.
 	-- @param Number the Number to round
-	-- @param [Divider] optional Number of which to "round" to. If nothing is given, it will default to 1. 
+	-- @param [Divider] optional Number of which to "round" to. If nothing is given, it will default to 1.
 
 	Divider = Divider or 1
 
@@ -746,14 +745,14 @@ local function DeselectTool(tool)
 	--print("Request DeselectTool "..tostring(tool))
 	if tool then
 		--print("Fulfilling request DeselectTool")
-		if ToolDeselectCallback[tool] then 
+		if ToolDeselectCallback[tool] then
 			ToolDeselectCallback[tool]()
 		else
 			--print("No callback")
 		end
 
 		local func = OnToolDeselect[tool]
-		if func then 
+		if func then
 			func(tool,Variables[tool])
 		end
 		if tool ~= "Duplicate [NM]" and tool ~= "Duplicate" then
@@ -774,23 +773,23 @@ local function SelectTool(tool)
 			if SelectedTool == tool then -- We're selecting ourselves, can't do that...
 				DeselectTool(SelectedTool)
 				return nil;
-			else 
+			else
 				DeselectTool(SelectedTool) -- Otherwise, just diselect the tool.
 			end
 		end
 
 		SelectedTool = tool
 
-		if ToolSelectCallback[tool] then 
+		if ToolSelectCallback[tool] then
 			ToolSelectCallback[tool]()
 		end
-		if SelectionChangedCallback[tool] then 
+		if SelectionChangedCallback[tool] then
 			SelectionChangedCallback[tool]()
 		end
 		OnToolSelect[tool](tool,Variables[tool])
 
 		local func = OnSelectionChanged[tool]
-		if func then 
+		if func then
 			func(tool, Variables[tool])
 		end
 	end
@@ -2111,7 +2110,7 @@ end
 
 
 
---- GUI Generation here? 
+--- GUI Generation here?
 
 
 local Screen
@@ -2573,12 +2572,12 @@ local function InitializeGUI()
 					label.Visible = true
 				end)
 
-				field.MouseLeave:connect(function() 
-					label.Visible = false 
+				field.MouseLeave:connect(function()
+					label.Visible = false
 				end)
 				ApplyMouseOverLabelEvent(label)
 
-				-- Record textbox's. 
+				-- Record textbox's.
 				MenuInputBoxes[#MenuInputBoxes+1] = field
 			end
 		end
@@ -2965,3 +2964,4 @@ do
 	end)
 end
 
+PluginActive = true
