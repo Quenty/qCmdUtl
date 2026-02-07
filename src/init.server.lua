@@ -7,7 +7,7 @@ local CoreGui              = game:GetService("CoreGui")
 local gloo = require(script.Gloo)
 
 local Toolbar             = plugin:CreateToolbar(PROJECT_NAME)
-local ActivateGUIButton   = Toolbar:CreateButton("", ""..PROJECT_NAME.."", "http://www.roblox.com/asset/?id=172761963")
+local ActivateGUIButton   = Toolbar:CreateButton("qCmdUtl", `A plugin designed to streamline building and creation in Roblox Studio. qCmdUtl {VERSION}`, "http://www.roblox.com/asset/?id=172761963", PROJECT_NAME)
 
 local NewCFrame           = CFrame.new
 local Vector3FromNormalId = Vector3.FromNormalId
@@ -804,7 +804,7 @@ end
 local Reactivate, Deactivate -- GUI
 
 do
-	local Mouse = Plugin:GetMouse()
+	local Mouse = plugin:GetMouse()
 
 	ModelScope = workspace
 
@@ -1983,14 +1983,14 @@ do local Menu = "SelectEdge"
 
 		OnToolSelect[Tool] = function(tool,vars)
 			if LegacyMode then
-				Plugin:Activate(true)
+				plugin:Activate(true)
 			end
-			local Mouse = Plugin:GetMouse()
+			local Mouse = plugin:GetMouse()
 
 			--[[if not Mouse_Active then
 				ActivateMouse()
 			end--]]
-			--[[Event.SelectEdge.Deactivate = Plugin.Deactivation:connect(function()
+			--[[Event.SelectEdge.Deactivate = plugin.Deactivation:connect(function()
 				DeselectTool(tool)
 			end)--]]
 
@@ -2518,7 +2518,7 @@ local function InitializeGUI()
 			local name = var[1]
 			local field
 			if type(vars[name]) == 'number' then
-				vars[name] = Plugin:GetSetting("Menus/".. menu_name .."/Variables/" .. name) or vars[name]
+				vars[name] = plugin:GetSetting("Menus/".. menu_name .."/Variables/" .. name) or vars[name]
 				vars[name] = RoundNumber(vars[name], 0.0001)
 
 
@@ -2532,7 +2532,7 @@ local function InitializeGUI()
 					local num = tonumber(eval(field.Text,vars[name]))
 					if num then
 						vars[name] = num
-						Plugin:SetSetting("Menus/".. menu_name .. "/Variables/" ..name, num)
+						plugin:SetSetting("Menus/".. menu_name .. "/Variables/" ..name, num)
 						field.Text = num
 					else
 						field.Text = vars[name]
@@ -2814,7 +2814,7 @@ local function InitializeGUI()
 end
 
 do
-	local Mouse = Plugin:GetMouse()
+	local Mouse = plugin:GetMouse()
 
 	local Is_Plugin_Enabled = false
 	local Disable
@@ -2822,7 +2822,7 @@ do
 
 	local function Enable()
 		Is_Plugin_Enabled = true
-		Plugin:Activate(true)
+		plugin:Activate(true)
 		ActivateGUIButton:SetActive(true)
 
 		if not GUI_Initialized then
@@ -2861,7 +2861,7 @@ do
 
 	function Disable()
 		Is_Plugin_Enabled = false
-		Plugin:Activate(false)
+		plugin:Activate(false)
 		ActivateGUIButton:SetActive(false)
 
 		Screen.Parent = nil
@@ -2881,7 +2881,7 @@ do
 		end
 	end)
 
-	Plugin.Deactivation:connect(function()
+	plugin.Deactivation:connect(function()
 		if GUI_Initialized and not LegacyMode then
 			Reactivate.Visible = true
 
