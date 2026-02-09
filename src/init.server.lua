@@ -1,14 +1,13 @@
 local PROJECT_NAME = "qCmdUtl"
-local VERSION = "5.1.4"
+local VERSION = "5.1.5"
 
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 local CoreGui              = game:GetService("CoreGui")
 
-local gloo = require(script.Parent.Gloo)
+local gloo = require(script.Gloo)
 
-local Plugin              = PluginManager():CreatePlugin()
-local Toolbar             = Plugin:CreateToolbar(PROJECT_NAME)
-local ActivateGUIButton   = Toolbar:CreateButton("", ""..PROJECT_NAME.."", "http://www.roblox.com/asset/?id=172761963")
+local Toolbar             = plugin:CreateToolbar(PROJECT_NAME)
+local ActivateGUIButton   = Toolbar:CreateButton("qCmdUtl", `A plugin designed to streamline building and creation in Roblox Studio. qCmdUtl {VERSION}`, "http://www.roblox.com/asset/?id=172761963", PROJECT_NAME)
 
 local NewCFrame           = CFrame.new
 local Vector3FromNormalId = Vector3.FromNormalId
@@ -16,8 +15,8 @@ local Vector3FromAxis     = Vector3.FromAxis
 
 local LegacyMode = false -- Just for you asimo3089...  https://xkcd.com/1172/
 
-local ceil  = math.ceil
 local floor = math.floor
+
 
 --[[
 
@@ -62,15 +61,15 @@ function Signal.new()
 	local mArgData = nil
 	local mArgDataCount = nil
 
-	function sig:fire(...)
+	function sig:Fire(...)
 		mArgData = {...}
 		mArgDataCount = select('#', ...)
 		mSignaler:Fire()
 	end
 
-	function sig:connect(f)
+	function sig:Connect(f)
 		if not f then error("connect(nil)", 2) end
-		return mSignaler.Event:connect(function()
+		return mSignaler.Event:Connect(function()
 			f(unpack(mArgData, 1, mArgDataCount))
 		end)
 	end
@@ -95,9 +94,9 @@ end
 ------------------------ qSystems.lua ------------------------
 
 local function RoundNumber(Number, Divider)
-	-- Rounds a Number, with 1.5 rounding up to 2, and so forth, by default. 
+	-- Rounds a Number, with 1.5 rounding up to 2, and so forth, by default.
 	-- @param Number the Number to round
-	-- @param [Divider] optional Number of which to "round" to. If nothing is given, it will default to 1. 
+	-- @param [Divider] optional Number of which to "round" to. If nothing is given, it will default to 1.
 
 	Divider = Divider or 1
 
@@ -733,7 +732,7 @@ local SelectionChangedCallback = {}
 local ToolDeselectCallback     = {}
 local ToolHints                = {} -- ["ToolName"] = "Hint here"
 
-Selection.SelectionChanged:connect(function()
+Selection.SelectionChanged:Connect(function()
 	if SelectedTool then
 		local callback = SelectionChangedCallback[SelectedTool]
 		if callback then callback() end
@@ -746,14 +745,14 @@ local function DeselectTool(tool)
 	--print("Request DeselectTool "..tostring(tool))
 	if tool then
 		--print("Fulfilling request DeselectTool")
-		if ToolDeselectCallback[tool] then 
+		if ToolDeselectCallback[tool] then
 			ToolDeselectCallback[tool]()
 		else
 			--print("No callback")
 		end
 
 		local func = OnToolDeselect[tool]
-		if func then 
+		if func then
 			func(tool,Variables[tool])
 		end
 		if tool ~= "Duplicate [NM]" and tool ~= "Duplicate" then
@@ -769,28 +768,28 @@ local SelectedToolSignal = Signal.new()
 
 local function SelectTool(tool)
 	if tool then
-		SelectedToolSignal:fire(tool)
+		SelectedToolSignal:Fire(tool)
 		if SelectedTool then
 			if SelectedTool == tool then -- We're selecting ourselves, can't do that...
 				DeselectTool(SelectedTool)
 				return nil;
-			else 
+			else
 				DeselectTool(SelectedTool) -- Otherwise, just diselect the tool.
 			end
 		end
 
 		SelectedTool = tool
 
-		if ToolSelectCallback[tool] then 
+		if ToolSelectCallback[tool] then
 			ToolSelectCallback[tool]()
 		end
-		if SelectionChangedCallback[tool] then 
+		if SelectionChangedCallback[tool] then
 			SelectionChangedCallback[tool]()
 		end
 		OnToolSelect[tool](tool,Variables[tool])
 
 		local func = OnSelectionChanged[tool]
-		if func then 
+		if func then
 			func(tool, Variables[tool])
 		end
 	end
@@ -805,7 +804,7 @@ end
 local Reactivate, Deactivate -- GUI
 
 do
-	local Mouse = Plugin:GetMouse()
+	local Mouse = plugin:GetMouse()
 
 	ModelScope = workspace
 
@@ -814,7 +813,7 @@ do
 	local select_hold = true
 	local click_stamp = 0
 
-	Event.Mouse.Down = Mouse.Button1Down:connect(function()
+	Event.Mouse.Down = Mouse.Button1Down:Connect(function()
 		Down = true
 		if not Mouse_Alt_Active then
 			local stamp = tick()
@@ -824,7 +823,7 @@ do
 			else
 				local remove = Click(Mouse,true)
 				if select_hold then
-					Event.Mouse.SelectHold = Mouse.Move:connect(function()
+					Event.Mouse.SelectHold = Mouse.Move:Connect(function()
 						Click(Mouse,false,remove)
 					end)
 				end
@@ -833,18 +832,18 @@ do
 		end
 	end)
 
-	Event.Mouse.Up = Mouse.Button1Up:connect(function()
+	Event.Mouse.Up = Mouse.Button1Up:Connect(function()
 		--print("Up")
 		Down = false
 		Event.Mouse.SelectHold = nil
 	end)
 
-	Event.Mouse.Move = Mouse.Move:connect(function()
+	Event.Mouse.Move = Mouse.Move:Connect(function()
 		click_stamp = 0
 	end)
 
 
-	Event.Mouse.KeyDown = Mouse.KeyDown:connect(function(key)
+	Event.Mouse.KeyDown = Mouse.KeyDown:Connect(function(key)
 		if CTRL_KEYS[key] then
 			Mouse_Ctrl_Active = true
 		elseif ALT_KEYS[key] then
@@ -852,7 +851,7 @@ do
 		end
 	end)
 
-	Event.Mouse.KeyUp = Mouse.KeyUp:connect(function(key)
+	Event.Mouse.KeyUp = Mouse.KeyUp:Connect(function(key)
 		--print("Key up: "..string.byte(key:lower()));
 
 		if CTRL_KEYS[key] then
@@ -898,7 +897,7 @@ do local Menu = "Move"
 			local origin = {}
 			local ocf = Overlay.CFrame
 			local inc = vars.Increment
-			Event[tool].Down = OverlayHandles.MouseButton1Down:connect(function(face)
+			Event[tool].Down = OverlayHandles.MouseButton1Down:Connect(function(face)
 				inc = vars.Increment
 				for k in pairs(origin) do
 					origin[k] = nil
@@ -910,7 +909,7 @@ do local Menu = "Move"
 				DisplayInfo(true, "Move:",0)
 			end)
 			local rdis
-			Event[tool].Drag = OverlayHandles.MouseDrag:connect(function(face,distance)
+			Event[tool].Drag = OverlayHandles.MouseDrag:Connect(function(face,distance)
 				rdis = Snap(distance,inc)
 				local pos = Vector3FromNormalId(face)*rdis
 				for part,cframe in pairs(origin) do
@@ -923,7 +922,7 @@ do local Menu = "Move"
 			end)
 
 			-- Handle Undo
-			Event[tool].Up = OverlayHandles.MouseButton1Up:connect(function()
+			Event[tool].Up = OverlayHandles.MouseButton1Up:Connect(function()
 				DisplayInfo(true, "Moved:",rdis)
 			end)
 		end
@@ -954,7 +953,7 @@ do local Menu = "Move"
 			local corigin
 			local ocf = Overlay.CFrame
 			local inc = vars.Increment
-			Event[tool].Down = OverlayHandles.MouseButton1Down:connect(function(face)
+			Event[tool].Down = OverlayHandles.MouseButton1Down:Connect(function(face)
 				inc = vars.Increment
 				corigin = ToolSelection[1].CFrame
 				for k in pairs(origin) do
@@ -967,7 +966,7 @@ do local Menu = "Move"
 				DisplayInfo(true, "Move:",0)
 			end)
 			local rdis
-			Event[tool].Drag = OverlayHandles.MouseDrag:connect(function(face,distance)
+			Event[tool].Drag = OverlayHandles.MouseDrag:Connect(function(face,distance)
 				rdis = Snap(distance,inc)
 				local cf = corigin * CFrame.new(Vector3FromNormalId(face)*rdis)
 				for part,cframe in pairs(origin) do
@@ -980,7 +979,7 @@ do local Menu = "Move"
 			end)
 
 			-- Handle Undo
-			Event[tool].Up = OverlayHandles.MouseButton1Up:connect(function()
+			Event[tool].Up = OverlayHandles.MouseButton1Up:Connect(function()
 				DisplayInfo(true, "Moved:",rdis)
 			end)
 		end
@@ -1012,7 +1011,7 @@ do local Menu = "Move"
 			local origin = {}
 			local ocf = Overlay.CFrame
 			local inc = vars.Increment
-			Event[tool].Down = OverlayHandles.MouseButton1Down:connect(function(face)
+			Event[tool].Down = OverlayHandles.MouseButton1Down:Connect(function(face)
 				inc = vars.Increment
 				for k in pairs(origin) do
 					origin[k] = nil
@@ -1024,7 +1023,7 @@ do local Menu = "Move"
 				DisplayInfo(true, "Move:",0)
 			end)
 			local rdis
-			Event[tool].Drag = OverlayHandles.MouseDrag:connect(function(face,distance)
+			Event[tool].Drag = OverlayHandles.MouseDrag:Connect(function(face,distance)
 				rdis = Snap(distance,inc)
 				local cf = CFrame.new(Vector3FromNormalId(face)*rdis)
 				for part,cframe in pairs(origin) do
@@ -1037,7 +1036,7 @@ do local Menu = "Move"
 			end)
 
 			-- Handle Undo
-			Event[tool].Up = OverlayHandles.MouseButton1Up:connect(function()
+			Event[tool].Up = OverlayHandles.MouseButton1Up:Connect(function()
 				DisplayInfo(true, "Moved:",rdis)
 			end)
 		end
@@ -1086,7 +1085,7 @@ do local Menu = "Rotate"
 			local inc = vars.Increment
 			local rdis
 
-			Event[tool].Down = OverlayArcHandles.MouseButton1Down:connect(function(axis)
+			Event[tool].Down = OverlayArcHandles.MouseButton1Down:Connect(function(axis)
 				inc = vars.Increment
 				corigin = ToolSelection[1].CFrame
 				for k in pairs(origin) do
@@ -1098,7 +1097,7 @@ do local Menu = "Rotate"
 				ocf = corigin:toObjectSpace(Overlay.CFrame)
 				DisplayInfo(true, "Rotate:",0)
 			end)
-			Event[tool].Drag = OverlayArcHandles.MouseDrag:connect(function(axis,angle)
+			Event[tool].Drag = OverlayArcHandles.MouseDrag:Connect(function(axis,angle)
 				rdis = Snap(math.deg(angle),inc)
 				local a = Vector3FromAxis(axis)*math.rad(rdis)
 				local new = corigin * CFrame.Angles(a.x,a.y,a.z)
@@ -1110,7 +1109,7 @@ do local Menu = "Rotate"
 				Overlay.CFrame = new:toWorldSpace(ocf)
 				DisplayInfo(false, "Rotate:",rdis)
 			end)
-			Event[tool].Up = OverlayArcHandles.MouseButton1Up:connect(function(axis)
+			Event[tool].Up = OverlayArcHandles.MouseButton1Up:Connect(function(axis)
 				DisplayInfo(true, "Rotate:",rdis)
 			end)
 		end
@@ -1143,7 +1142,7 @@ do local Menu = "Rotate"
 			local inc = vars.Increment
 			local rdis
 
-			Event[tool].Down = OverlayArcHandles.MouseButton1Down:connect(function(axis)
+			Event[tool].Down = OverlayArcHandles.MouseButton1Down:Connect(function(axis)
 				inc = vars.Increment
 				corigin = Overlay.CFrame
 				for k in pairs(origin) do
@@ -1154,7 +1153,7 @@ do local Menu = "Rotate"
 				end
 				DisplayInfo(true, "Rotate:",0)
 			end)
-			Event[tool].Drag = OverlayArcHandles.MouseDrag:connect(function(axis,angle)
+			Event[tool].Drag = OverlayArcHandles.MouseDrag:Connect(function(axis,angle)
 				rdis = Snap(math.deg(angle),inc)
 				local a = Vector3FromAxis(axis)*math.rad(rdis)
 				local new = corigin * CFrame.Angles(a.x,a.y,a.z)
@@ -1166,7 +1165,7 @@ do local Menu = "Rotate"
 				Overlay.CFrame = new
 				DisplayInfo(false, "Rotate:",rdis)
 			end)
-			Event[tool].Up = OverlayArcHandles.MouseButton1Up:connect(function(axis)
+			Event[tool].Up = OverlayArcHandles.MouseButton1Up:Connect(function(axis)
 				DisplayInfo(true, "Rotated:",rdis)
 			end)
 		end
@@ -1200,7 +1199,7 @@ do local Menu = "Rotate"
 			local inc = vars.Increment
 			local rdis
 
-			Event[tool].Down = OverlayArcHandles.MouseButton1Down:connect(function(axis)
+			Event[tool].Down = OverlayArcHandles.MouseButton1Down:Connect(function(axis)
 				inc = vars.Increment
 				for k in pairs(origin) do
 					origin[k] = nil
@@ -1211,7 +1210,7 @@ do local Menu = "Rotate"
 				ocf = Overlay.CFrame
 				DisplayInfo(true, "Rotate:",0)
 			end)
-			Event[tool].Drag = OverlayArcHandles.MouseDrag:connect(function(axis,angle)
+			Event[tool].Drag = OverlayArcHandles.MouseDrag:Connect(function(axis,angle)
 				rdis = Snap(math.deg(angle),inc)
 				local a = Vector3FromAxis(axis)*math.rad(rdis)
 				local new = CFrame.Angles(a.x,a.y,a.z)
@@ -1223,7 +1222,7 @@ do local Menu = "Rotate"
 				Overlay.CFrame = ocf * new
 				DisplayInfo(false, "Rotate:",rdis)
 			end)
-			Event[tool].Up = OverlayArcHandles.MouseButton1Up:connect(function(axis)
+			Event[tool].Up = OverlayArcHandles.MouseButton1Up:Connect(function(axis)
 				DisplayInfo(true, "Rotated:",rdis)
 			end)
 		end
@@ -1294,7 +1293,7 @@ do local Menu = "Resize"
 			local cinc
 			local inc
 			local rdis
-			Event[tool].Down = OverlayHandles.MouseButton1Down:connect(function(face)
+			Event[tool].Down = OverlayHandles.MouseButton1Down:Connect(function(face)
 				face_mult,face_size,face_vec = FACE_MULTIPLIER[face],FACE_COMPONENT[face],Vector3FromNormalId(face)
 				first = ToolSelection[1]
 				for k in pairs(origin) do
@@ -1312,7 +1311,7 @@ do local Menu = "Resize"
 				DisplayInfo(true, "Resize:",0)
 				rdis = 0
 			end)
-			Event[tool].Drag = OverlayHandles.MouseDrag:connect(function(face,distance)
+			Event[tool].Drag = OverlayHandles.MouseDrag:Connect(function(face,distance)
 				local dis = distance*face_mult
 				for part,info in pairs(origin) do
 					local sz--[[,ff,ffm--]] = info[2]--[[,info[3],info[4]--]]
@@ -1353,7 +1352,7 @@ do local Menu = "Resize"
 			end)
 
 			-- Handle Undo
-			Event[tool].Up = OverlayHandles.MouseButton1Up:connect(function()
+			Event[tool].Up = OverlayHandles.MouseButton1Up:Connect(function()
 				DisplayInfo(true, "Resized:",rdis)
 			end)
 		end
@@ -1392,7 +1391,7 @@ do local Menu = "Resize"
 
 			local rdis = 0
 
-			Event[tool].Down = OverlayHandles.MouseButton1Down:connect(function(face)
+			Event[tool].Down = OverlayHandles.MouseButton1Down:Connect(function(face)
 				face_mult,face_size,face_vec = FACE_MULTIPLIER[face],FACE_COMPONENT[face],Vector3FromNormalId(face)
 				first = ToolSelection[1]
 				for k in pairs(origin) do
@@ -1413,7 +1412,7 @@ do local Menu = "Resize"
 				rdis = 0
 			end)
 
-			Event[tool].Drag = OverlayHandles.MouseDrag:connect(function(face,distance)
+			Event[tool].Drag = OverlayHandles.MouseDrag:Connect(function(face,distance)
 				if face_mult then
 					local dis = distance*2*face_mult
 					for part,info in pairs(origin) do
@@ -1456,7 +1455,7 @@ do local Menu = "Resize"
 			end)
 
 			-- Handle Undo
-			Event[tool].Up = OverlayHandles.MouseButton1Up:connect(function()
+			Event[tool].Up = OverlayHandles.MouseButton1Up:Connect(function()
 				DisplayInfo(true, "Resized:", rdis)
 			end)
 		end
@@ -1984,14 +1983,14 @@ do local Menu = "SelectEdge"
 
 		OnToolSelect[Tool] = function(tool,vars)
 			if LegacyMode then
-				Plugin:Activate(true)
+				plugin:Activate(true)
 			end
-			local Mouse = Plugin:GetMouse()
+			local Mouse = plugin:GetMouse()
 
 			--[[if not Mouse_Active then
 				ActivateMouse()
 			end--]]
-			--[[Event.SelectEdge.Deactivate = Plugin.Deactivation:connect(function()
+			--[[Event.SelectEdge.Deactivate = plugin.Deactivation:Connect(function()
 				DeselectTool(tool)
 			end)--]]
 
@@ -2025,13 +2024,13 @@ do local Menu = "SelectEdge"
 				end
 			end
 
-			Event.SelectEdge.Down = Mouse.Button1Down:connect(function()
+			Event.SelectEdge.Down = Mouse.Button1Down:Connect(function()
 				Down = true
 				if Mouse_Alt_Active then
 					select_edge()
 				end
 			end)
-			Event.SelectEdge.Up = Mouse.Button1Up:connect(function()
+			Event.SelectEdge.Up = Mouse.Button1Up:Connect(function()
 				OverlayArcHandles.Visible = true
 				OverlaySelectionBox.Visible = false
 				-- Overlay.Size = Vector3.new(4, 4, 4)
@@ -2040,7 +2039,7 @@ do local Menu = "SelectEdge"
 
 				Event.SelectEdge.SelectHold = nil
 			end)
-			Event.SelectEdge.Move = Mouse.Move:connect(function()
+			Event.SelectEdge.Move = Mouse.Move:Connect(function()
 				click_stamp = 0
 				if Down then
 					if Mouse_Alt_Active then
@@ -2060,7 +2059,7 @@ do local Menu = "SelectEdge"
 			local corigin = CFrame.new()
 			local rdis
 
-			Event.SelectEdge.Arc.Down = OverlayArcHandles.MouseButton1Down:connect(function(axis)
+			Event.SelectEdge.Arc.Down = OverlayArcHandles.MouseButton1Down:Connect(function(axis)
 				if SelectEdgeVisible then
 					inc = vars.RotIncrement
 					corigin = Overlay.CFrame
@@ -2074,7 +2073,7 @@ do local Menu = "SelectEdge"
 					DisplayInfo(true, "Rotate:",0)
 				end
 			end)
-			Event.SelectEdge.Arc.Drag = OverlayArcHandles.MouseDrag:connect(function(axis,angle)
+			Event.SelectEdge.Arc.Drag = OverlayArcHandles.MouseDrag:Connect(function(axis,angle)
 				rdis = Snap(math.deg(angle),inc)
 				local a = Vector3FromAxis(axis)*math.rad(rdis)
 				local new = corigin * CFrame.Angles(a.x,a.y,a.z)
@@ -2087,7 +2086,7 @@ do local Menu = "SelectEdge"
 				DisplayInfo(false, "Rotate:",rdis)
 			end)
 
-			Event.SelectEdge.Arc.Up = OverlayArcHandles.MouseButton1Up:connect(function(axis,angle)
+			Event.SelectEdge.Arc.Up = OverlayArcHandles.MouseButton1Up:Connect(function(axis,angle)
 				DisplayInfo(true, "Rotated:",rdis)
 			end)
 		end
@@ -2111,7 +2110,7 @@ end
 
 
 
---- GUI Generation here? 
+--- GUI Generation here?
 
 
 local Screen
@@ -2145,16 +2144,16 @@ local function InitializeGUI()
 		-- Applies the event firing to the label
 		-- @author Quenty
 
-		MouseOverLabelEvent:connect(function(LabelVisible)
+		MouseOverLabelEvent:Connect(function(LabelVisible)
 			if LabelVisible ~= GuiLabel then
 				GuiLabel.Visible = false
 			end
 		end)
 
-		GuiLabel.Changed:connect(function(Property)
+		GuiLabel.Changed:Connect(function(Property)
 			if Property == "Visible" then
 				if GuiLabel.Visible then
-					MouseOverLabelEvent:fire(GuiLabel)
+					MouseOverLabelEvent:Fire(GuiLabel)
 				end
 			end
 		end)
@@ -2311,7 +2310,7 @@ local function InitializeGUI()
 
 	-- Dang it Anaminus... this is horrible. Your global states are killing me!s
 
-	Event.ReactivateChangedZIndex = Reactivate.Changed:connect(function(Property)
+	Event.ReactivateChangedZIndex = Reactivate.Changed:Connect(function(Property)
 		if Property == "ZIndex" and Reactivate.ZIndex ~= 20 then
 			Reactivate.ZIndex    = 20
 			wait()
@@ -2452,11 +2451,11 @@ local function InitializeGUI()
 			MenuContainerClass.MoveObject(Placeholder,index)
 		end
 
-		drag_con = MouseDrag.MouseMoved:connect(function(...)
+		drag_con = MouseDrag.MouseMoved:Connect(function(...)
 			doToggle = false
 			mouse_drag(...)
 		end)
-		up_con = MouseDrag.MouseButton1Up:connect(mouse_up)
+		up_con = MouseDrag.MouseButton1Up:Connect(mouse_up)
 		gloo.SetZIndex(MenuFrame,zIndex + 1)
 		MouseDrag.Parent = Screen
 		mouse_drag(mouse_pos.x,mouse_pos.y)
@@ -2488,7 +2487,7 @@ local function InitializeGUI()
 			label.Visible    = false
 			label.Text       = menu_name .. " Menu"
 			label.Parent     = Node
-			Node.MouseEnter:connect(function()
+			Node.MouseEnter:Connect(function()
 				if Node.AbsolutePosition.x + Node.AbsoluteSize.x + label.AbsoluteSize.x > Screen.AbsoluteSize.x then
 					label.Position = UDim2.new(0,-label.AbsoluteSize.x,0,0)
 				else
@@ -2496,7 +2495,7 @@ local function InitializeGUI()
 				end
 				label.Visible = true
 			end)
-			Node.MouseLeave:connect(function() label.Visible = false end)
+			Node.MouseLeave:Connect(function() label.Visible = false end)
 			ApplyMouseOverLabelEvent(label)
 
 			local visible = true
@@ -2509,7 +2508,7 @@ local function InitializeGUI()
 				end
 			end
 
-			Node.MouseButton1Down:connect(function(x,y)
+			Node.MouseButton1Down:Connect(function(x,y)
 				label.Visible = false
 				InvokeMenuDrag(MenuFrame,Vector2.new(x,y) - MenuFrame.AbsolutePosition,toggle_menu)
 			end)
@@ -2519,7 +2518,7 @@ local function InitializeGUI()
 			local name = var[1]
 			local field
 			if type(vars[name]) == 'number' then
-				vars[name] = Plugin:GetSetting("Menus/".. menu_name .."/Variables/" .. name) or vars[name]
+				vars[name] = plugin:GetSetting("Menus/".. menu_name .."/Variables/" .. name) or vars[name]
 				vars[name] = RoundNumber(vars[name], 0.0001)
 
 
@@ -2529,11 +2528,11 @@ local function InitializeGUI()
 				field.Text = vars[name]
 
 
-				field.FocusLost:connect(function(enter)
+				field.FocusLost:Connect(function(enter)
 					local num = tonumber(eval(field.Text,vars[name]))
 					if num then
 						vars[name] = num
-						Plugin:SetSetting("Menus/".. menu_name .. "/Variables/" ..name, num)
+						plugin:SetSetting("Menus/".. menu_name .. "/Variables/" ..name, num)
 						field.Text = num
 					else
 						field.Text = vars[name]
@@ -2544,7 +2543,7 @@ local function InitializeGUI()
 				ButtonStylist.AddObject(field)
 				MenuClass.AddObject(field)
 				field.Text = vars[name]
-				field.FocusLost:connect(function(enter)
+				field.FocusLost:Connect(function(enter)
 					if field.Text ~= "" then
 						vars[name] = field.Text
 					else
@@ -2564,7 +2563,7 @@ local function InitializeGUI()
 				label.Visible = false
 				label.Text = var[2]
 
-				field.MouseEnter:connect(function()
+				field.MouseEnter:Connect(function()
 					if field.AbsolutePosition.x + field.AbsoluteSize.x + label.AbsoluteSize.x > Screen.AbsoluteSize.x then
 						label.Position = UDim2.new(0,-label.AbsoluteSize.x,0,0)
 					else
@@ -2573,12 +2572,12 @@ local function InitializeGUI()
 					label.Visible = true
 				end)
 
-				field.MouseLeave:connect(function() 
-					label.Visible = false 
+				field.MouseLeave:Connect(function()
+					label.Visible = false
 				end)
 				ApplyMouseOverLabelEvent(label)
 
-				-- Record textbox's. 
+				-- Record textbox's.
 				MenuInputBoxes[#MenuInputBoxes+1] = field
 			end
 		end
@@ -2602,7 +2601,7 @@ local function InitializeGUI()
 				SelectedButtonStylist.RemoveObject(button)
 				ButtonStylist.AddObject(button)
 			end
-			button.MouseButton1Click:connect(function()
+			button.MouseButton1Click:Connect(function()
 				SelectTool(tool)
 			end)
 
@@ -2618,7 +2617,7 @@ local function InitializeGUI()
 				label.Text       = ToolHints[tool]
 				label.Parent     = button
 
-				button.MouseEnter:connect(function()
+				button.MouseEnter:Connect(function()
 					if button.AbsolutePosition.x + button.AbsoluteSize.x + label.AbsoluteSize.x > Screen.AbsoluteSize.x then
 						label.Position = UDim2.new(0,-label.AbsoluteSize.x,0,0)
 					else
@@ -2626,7 +2625,7 @@ local function InitializeGUI()
 					end
 					label.Visible = true
 				end)
-				button.MouseLeave:connect(function() label.Visible = false end)
+				button.MouseLeave:Connect(function() label.Visible = false end)
 				ApplyMouseOverLabelEvent(label)
 			end
 
@@ -2680,10 +2679,10 @@ local function InitializeGUI()
 		end
 	end
 
-	MouseOverFrame.MouseEnter:connect(ExpandPanel)
-	MouseOverFrame.MouseLeave:connect(CollapsePanel)
+	MouseOverFrame.MouseEnter:Connect(ExpandPanel)
+	MouseOverFrame.MouseLeave:Connect(CollapsePanel)
 
-	MenuContainerFrame.Changed:connect(function(p)
+	MenuContainerFrame.Changed:Connect(function(p)
 		if hoverEnabled and p == "AbsoluteSize" then
 			MouseOverFrame.Size = MenuContainerFrame.Size
 		end
@@ -2691,7 +2690,7 @@ local function InitializeGUI()
 	MouseOverFrame.Size = MenuContainerFrame.Size
 	MouseOverFrame.Position = MenuContainerFrame.Position
 
-	DisplayInfoGUI.Changed:connect(function(p)
+	DisplayInfoGUI.Changed:Connect(function(p)
 		if infoRight and p == "AbsoluteSize" then
 			local pos = DisplayInfoGUI.Position
 			DisplayInfoGUI.Position = UDim2.new(1,-DisplayInfoGUI.AbsoluteSize.x,pos.Y.Scale,pos.Y.Offset)
@@ -2758,7 +2757,7 @@ local function InitializeGUI()
 				Size = UDim2.new(0,object.AbsoluteSize.x,0,object.AbsoluteSize.y);
 				Position = UDim2.new(0,object.AbsolutePosition.x,0,object.AbsolutePosition.y);
 			}
-			object.Changed:connect(function(p)
+			object.Changed:Connect(function(p)
 				if p == "AbsoluteSize" then
 					frame.Size = UDim2.new(0,object.AbsoluteSize.x,0,object.AbsoluteSize.y)
 				elseif p == "AbsolutePosition" then
@@ -2782,7 +2781,7 @@ local function InitializeGUI()
 			BackpackButton = true;
 		}
 
-		RobloxGui.DescendantAdded:connect(function(object)
+		RobloxGui.DescendantAdded:Connect(function(object)
 			local find = findObjects[object.Name]
 			if find then
 				if type(find) == "function" then
@@ -2815,7 +2814,7 @@ local function InitializeGUI()
 end
 
 do
-	local Mouse = Plugin:GetMouse()
+	local Mouse = plugin:GetMouse()
 
 	local Is_Plugin_Enabled = false
 	local Disable
@@ -2823,28 +2822,28 @@ do
 
 	local function Enable()
 		Is_Plugin_Enabled = true
-		Plugin:Activate(true)
+		plugin:Activate(true)
 		ActivateGUIButton:SetActive(true)
 
 		if not GUI_Initialized then
 			InitializeGUI()
 
-			Event.ReactivateClick = Reactivate.MouseButton1Click:connect(function()
+			Event.ReactivateClick = Reactivate.MouseButton1Click:Connect(function()
 				SelectPreviousTool()
 				Enable()
 		   	end)
 
-		   	Event.ReactivateClickTwo = ReactivateTwo.MouseButton1Click:connect(function()
+		   	Event.ReactivateClickTwo = ReactivateTwo.MouseButton1Click:Connect(function()
 				SelectPreviousTool()
 				Enable()
 		   	end)
 
-		   	Event.DeactivateClick = Deactivate.MouseButton1Click:connect(function()
+		   	Event.DeactivateClick = Deactivate.MouseButton1Click:Connect(function()
 		   		--- Deactivates it 100%.
 				Disable()
 		   	end)
 
-		   	Event.AlwaysActiveCheckmarkClick = AlwaysActiveCheckmark.MouseButton1Click:connect(function()
+		   	Event.AlwaysActiveCheckmarkClick = AlwaysActiveCheckmark.MouseButton1Click:Connect(function()
 		   		LegacyMode = not LegacyMode
 
 		   		if LegacyMode then
@@ -2862,7 +2861,7 @@ do
 
 	function Disable()
 		Is_Plugin_Enabled = false
-		Plugin:Activate(false)
+		plugin:Activate(false)
 		ActivateGUIButton:SetActive(false)
 
 		Screen.Parent = nil
@@ -2874,7 +2873,7 @@ do
 		CollapsePanel(true)
 	end
 
-	ActivateGUIButton.Click:connect(function()
+	ActivateGUIButton.Click:Connect(function()
 		if not Is_Plugin_Enabled then
 			Enable()
 		else
@@ -2882,7 +2881,11 @@ do
 		end
 	end)
 
-	Plugin.Deactivation:connect(function()
+	plugin.Unloading:Connect(function()
+		Disable()
+	end)
+
+	plugin.Deactivation:Connect(function()
 		if GUI_Initialized and not LegacyMode then
 			Reactivate.Visible = true
 
@@ -2958,10 +2961,14 @@ do
 		KeysDown[string.byte(key:lower())] = true;
 	end
 
-	Mouse.KeyDown:connect(KeyDown)
-	Mouse.KeyUp:connect(KeyUp)
-	SelectedToolSignal:connect(function()
+	Mouse.KeyDown:Connect(KeyDown)
+	Mouse.KeyUp:Connect(KeyUp)
+	SelectedToolSignal:Connect(function()
 		KeysDown[48] = false
 	end)
 end
 
+PluginActive = true
+
+plugin.Unloading:Connect(function()
+end)

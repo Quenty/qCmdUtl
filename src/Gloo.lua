@@ -87,11 +87,7 @@ v0.6:
 	- added DetailedList
 	- added Help function
 ]==]
---[[
-local PROJECT_NAME = "gloo"
 
-if _G[PROJECT_NAME] then return end
---]]
 ---- SETTINGS
 local ENTRY_SIZE	= 17	-- default size of rows, scrollbars, etc
 local WEAK_TABLES	= false	-- whether weak tables are enabled (causes problems under certain circumstances)
@@ -510,7 +506,7 @@ local function CreateStylist(StyleTable)
 	StyleTable = StyleTable or {}
 	local ObjectLookup = WEAK_TABLES and setmetatable({},WEAK_MODE.K) or {}
 	local AliasObjectLookup = WEAK_TABLES and setmetatable({},WEAK_MODE.K) or {}
-									-- ISSUE: objects are getting dropped when they obviously haven't been collected 
+									-- ISSUE: objects are getting dropped when they obviously haven't been collected
 	local StylistLookup = WEAK_TABLES and setmetatable({},WEAK_MODE.K) or {}
 	local AliasStylistLookup = WEAK_TABLES and setmetatable({},WEAK_MODE.K) or {}
 
@@ -2114,7 +2110,7 @@ Objects that have their Visible property set to false become ignored.
 Arguments:
 	`frame`
 		If specified, then it will be used as the StackingFrame.
-		Children that exist in this object beforehand will be added to the StackingFrame automatically. 
+		Children that exist in this object beforehand will be added to the StackingFrame automatically.
 		Use the AddObject function to add children afterwards.
 		Optional; defaults to a new Frame.
 	`horizontal`
@@ -3874,7 +3870,7 @@ Arguments:
 		If unspecified, a list of functions will be displayed.
 	`no_print`
 		If set to true, the returned message will NOT also be printed.
-		Note than when printed this way, the message is automatically formatted to maintain readability. 
+		Note than when printed this way, the message is automatically formatted to maintain readability.
 
 Returns:
 	`message`
@@ -3957,8 +3953,5 @@ setmetatable(lib,{
 		return ("%s GUI Library [v%s] (use %s.Help() for help)"):format("gloo", version, "gloo")
 	end;
 })
-
---_G.gloo = lib
---print(("Loaded %s library. Type _G.%s.Help() for help."):format(PROJECT_NAME, PROJECT_NAME))
 
 return lib
