@@ -11,5 +11,8 @@ You can find the published version [here](https://www.roblox.com/library/1423140
 3. Navigate to https://www.roblox.com/library/142314093/qCmdUtl-Streamlined-building
 4. Press Install
 
+## Building locally
 
-
+```
+rojo build --plugin qCmdUtl.rbxm --watch
+```

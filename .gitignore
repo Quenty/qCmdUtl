@@ -1,5 +1,18 @@
 *.sublime-project
 *.sublime-workspace
 *.rbxl
+node_modules
+out
+roblox.toml
+roblox.yml
+.env
+build
+sourcemap.json
+dist
+*.tsbuildinfo
+.DS_Store
+globalTypes.d.lua
+*.vsix
+tests/bin
 
 archive/*.*
